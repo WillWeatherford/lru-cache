@@ -46,16 +46,7 @@ class LRUCache(object):
 
 def session():
     """Provide an interactive session to use a new LRU cache."""
-    cache = None
-    while cache is None:
-        command = raw_input()
-        size_match = SIZE_PAT.match(command)
-        if size_match is None:
-            error()
-            continue
-        size = int(size_match.groupdict()['size'])
-        cache = LRUCache(size)
-        print('SIZE OK')
+    cache = initialize_cache()
 
     while True:
         command = raw_input().split(' ')
@@ -70,6 +61,7 @@ def session():
                 error()
             else:
                 print('SET {}'.format(result))
+
         elif method == 'GET':
             try:
                 result = cache.get(*args)
@@ -79,14 +71,32 @@ def session():
                 print('NOTFOUND')
             else:
                 print('GOT {}'.format(result))
+
         elif method == 'EXIT':
-                break
+            break
         else:
             error()
 
 
+def initialize_cache():
+    """Sub-loop to ensure that cache is initialized by SIZE command."""
+    cache = None
+    while cache is None:
+        command = raw_input()
+        size_match = SIZE_PAT.match(command)
+        if size_match is None:
+            error()
+            continue
+        size = int(size_match.groupdict()['size'])
+        cache = LRUCache(size)
+        print('SIZE OK')
+    return cache
+
+
 def error():
+    """Simple function to print error."""
     print('ERROR')
+
 
 if __name__ == '__main__':
     session()
