@@ -1,8 +1,4 @@
-"""Implementation of Least Recently Used Cache data structure.
-
-Need both key/value paradigm of hash table as well as ordered paradigm
-of queue. This is a great use case in Python for collections.OrderedDict.
-"""
+"""Implementation of Least Recently Used Cache data structure."""
 
 from __future__ import unicode_literals
 from collections import OrderedDict
@@ -21,7 +17,14 @@ class LRUCache(object):
         self._cache = OrderedDict()
 
     def set(self, key, value):
-        """."""
+        """Set the given key/value pair in the cache.
+
+        First try to pop the item out of the cache, in order to then re-set its
+        position as the most recently used item if it is already present.
+
+        If the setting operation will cause the cache to be larger than its
+        size limit, pop off the last used item.
+        """
         try:
             self._cache.pop(key)
         except KeyError:
@@ -31,10 +34,13 @@ class LRUCache(object):
             # popitem() method of OrderedDict with last=False will pop items in
             # first-in, first-out order
             self._cache.popitem(last=False)
-        return key
 
     def get(self, key):
-        """."""
+        """Return the value for the given key in the cache.
+
+        First try to pop the item out of the cache, in order to then re-set its
+        position as the most recently used item if it is already present.
+        """
         try:
             value = self._cache.pop(key)
         except KeyError:
@@ -56,11 +62,11 @@ def session():
         args = command[1:]
         if method == 'SET':
             try:
-                result = cache.set(*args)
+                cache.set(*args)
             except TypeError:
                 error()
             else:
-                print('SET {}'.format(result))
+                print('SET OK')
 
         elif method == 'GET':
             try:
@@ -79,9 +85,8 @@ def session():
 
 
 def initialize_cache():
-    """Sub-loop to ensure that cache is initialized by SIZE command."""
-    cache = None
-    while cache is None:
+    """Sub-loop to ensure that cache is initialized by SIZE command first."""
+    while True:
         command = raw_input()
         size_match = SIZE_PAT.match(command)
         if size_match is None:
@@ -90,6 +95,7 @@ def initialize_cache():
         size = int(size_match.groupdict()['size'])
         cache = LRUCache(size)
         print('SIZE OK')
+        break
     return cache
 
 
