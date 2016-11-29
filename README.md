@@ -26,6 +26,8 @@ The following commands can be used in the REPR:
 `GET <key>`: Gives the value associated to the given key in the cache
 `EXIT`: Close the REPR loop.
 
+The class definition and REPR loop are decoupled by intention, such that the
+LRUCache class can be used independently as needed.
 
 Time Complexity:
 As with a hash table, get and set are constant O(1) operations. Since each
