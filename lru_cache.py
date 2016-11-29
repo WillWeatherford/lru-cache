@@ -20,14 +20,28 @@ class LRUCache(object):
         self._size = size
         self._cache = OrderedDict()
 
-    def set():
-        pass
+    def set(self, key, value):
+        """."""
+        try:
+            self._cache.pop(key)
+        except KeyError:
+            pass
+        self._cache[key] = value
+        if len(self._cache) > self._size:
+            # popitem() method of OrderedDict with last=False will pop items in
+            # first-in, first-out order
+            self._cache.popitem(last=False)
+        return key
 
-    def get():
-        pass
-
-    def exit():
-        pass
+    def get(self, key):
+        """."""
+        try:
+            value = self._cache.pop(key)
+        except KeyError:
+            raise KeyError('Key not found in cache: {}'.format(key))
+        else:
+            self._cache[key] = value
+            return value
 
 
 def session():
@@ -41,23 +55,34 @@ def session():
             continue
         size = int(size_match.groupdict()['size'])
         cache = LRUCache(size)
+        print('SIZE OK')
 
     while True:
-        command = raw_input()
-        # In Python 3 only, there is a great syntax to unpack one and rest:
+        command = raw_input().split(' ')
+        # In Python 3 only, there is a better syntax to unpack first and rest:
         # first, *rest = a_list
-        command_parts = command.split(' ')
-        method_name = command_parts[0].lower()
-        try:
-            method = getattr(cache, method_name)
-        except AttributeError:
-            if method_name == 'exit':
-                break
-            else:
+        method = command[0]
+        args = command[1:]
+        if method == 'SET':
+            try:
+                result = cache.set(*args)
+            except TypeError:
                 error()
+            else:
+                print('SET {}'.format(result))
+        elif method == 'GET':
+            try:
+                result = cache.get(*args)
+            except TypeError:
+                error()
+            except KeyError:
+                print('NOTFOUND')
+            else:
+                print('GOT {}'.format(result))
+        elif method == 'EXIT':
+                break
         else:
-            result = method()
-            print(result)
+            error()
 
 
 def error():
